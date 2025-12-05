@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coach2Coach Network - Coming Soon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #064e3b 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .background-pattern {
+            position: absolute;
+            inset: 0;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .pattern-element {
+            position: absolute;
+            font-weight: bold;
+            color: white;
+        }
+
+        .pattern-x1 { top: 10%; left: 10%; font-size: 4rem; }
+        .pattern-o1 { top: 20%; right: 15%; font-size: 3rem; }
+        .pattern-arrow1 { bottom: 20%; left: 15%; font-size: 2.5rem; }
+        .pattern-arrow2 { bottom: 30%; right: 10%; font-size: 3rem; }
+        .pattern-x2 { top: 60%; left: 5%; font-size: 2rem; }
+        .pattern-o2 { top: 40%; right: 5%; font-size: 2.5rem; }
+
+        .container {
+            text-align: center;
+            max-width: 800px;
+            padding: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 2rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .brand-name {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: #10b981;
+        }
+
+        .tagline {
+            font-size: 1.25rem;
+            color: #10b981;
+            font-weight: 600;
+            margin-bottom: 3rem;
+            letter-spacing: 0.05em;
+        }
+
+        .main-heading {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .description {
+            font-size: 1.25rem;
+            color: #cbd5e1;
+            margin-bottom: 3rem;
+            line-height: 1.6;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .email-signup {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 400px;
+            margin: 0 auto 3rem;
+        }
+
+        .email-input {
+            padding: 1rem 1.5rem;
+            border: 2px solid #374151;
+            border-radius: 12px;
+            background: rgba(30, 41, 59, 0.8);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .email-input:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .email-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .notify-btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+
+        .notify-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .feature {
+            background: rgba(30, 41, 59, 0.6);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #10b981;
+        }
+
+        .feature p {
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+
+        .contact-info {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .contact-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #10b981;
+        }
+
+        .contact-details {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #cbd5e1;
+        }
+
+        .contact-item a {
+            color: #10b981;
+            text-decoration: none;
+        }
+
+        .contact-item a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .brand-name {
+                font-size: 2.5rem;
+            }
+
+            .main-heading {
+                font-size: 2rem;
+            }
+
+            .description {
+                font-size: 1.1rem;
+            }
+
+            .email-signup {
+                max-width: 100%;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-details {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        .success-message {
+            display: none;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid #10b981;
+            color: #10b981;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-pattern">
+        <div class="pattern-element pattern-x1">X</div>
+        <div class="pattern-element pattern-o1">O</div>
+        <div class="pattern-element pattern-arrow1">→</div>
+        <div class="pattern-element pattern-arrow2">↗</div>
+        <div class="pattern-element pattern-x2">X</div>
+        <div class="pattern-element pattern-o2">O</div>
+    </div>
+
+    <div class="container">
+        <img src="Logo Friday 5 16 ChatGPT Image May 16, 2025, 12_11_31 PM.png" alt="Coach2Coach Network Logo" class="logo">
+        
+        <h1 class="brand-name">Coach2Coach</h1>
+        <p class="tagline">Made for Coaches, by Coaches</p>
+        
+        <h2 class="main-heading">Something Amazing is Coming Soon!</h2>
+        
+        <p class="description">
+            The premier digital marketplace where coaching expertise meets opportunity. 
+            Create, sell, and discover game-changing resources for every sport and level.
+        </p>
+
+        <form class="email-signup" id="emailForm">
+            <input 
+                type="email" 
+                class="email-input" 
+                placeholder="Enter your email to get notified"
+                required
+                id="emailInput"
+            >
+            <button type="submit" class="notify-btn">Notify Me When We Launch</button>
+            <div class="success-message" id="successMessage">
+                Thanks! We'll notify you when Coach2Coach launches.
+            </div>
+        </form>
+
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">💰</div>
+                <h3>Monetize Your Expertise</h3>
+                <p>Turn your coaching knowledge into income with our fair commission structure</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🌐</div>
+                <h3>Global Reach</h3>
+                <p>Connect with coaches worldwide and share your resources with a global audience</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <h3>Easy to Use</h3>
+                <p>Simple upload process and intuitive platform designed specifically for coaches</p>
+            </div>
+        </div>
+
+        <div class="contact-info">
+            <h3>Get in Touch</h3>
+            <div class="contact-details">
+                <div class="contact-item">
+                    <span>📧</span>
+                    <a href="mailto:zach@coach2coachnetwork.com">zach@coach2coachnetwork.com</a>
+                </div>
+                <div class="contact-item">
+                    <span>📞</span>
+                    <a href="tel:6783435084">678-343-5084</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('emailForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('emailInput').value;
+            const successMessage = document.getElementById('successMessage');
+            const submitButton = document.querySelector('.notify-btn');
+            
+            // Disable button and show loading state
+            submitButton.disabled = true;
+            submitButton.textContent = 'Submitting...';
+            
+            // Option 1: Using Formspree (recommended - easy setup)
+            fetch('https://formspree.io/f/YOUR_FORM_ID', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,
+                    message: 'Coach2Coach waitlist signup'
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    successMessage.style.display = 'block';
+                    document.getElementById('emailInput').value = '';
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Sorry, there was an error. Please try again or contact us directly.');
+            })
+            .finally(() => {
+                // Re-enable button
+                submitButton.disabled = false;
+                submitButton.textContent = 'Notify Me When We Launch';
+            });
+            
+            // Hide success message after 5 seconds
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

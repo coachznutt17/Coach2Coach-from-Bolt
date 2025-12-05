@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fix Profile</title>
+</head>
+<body>
+  <h1>Profile Fix</h1>
+  <button onclick="fixProfile()">Fix Years of Experience to 20+</button>
+  <div id="result"></div>
+
+  <script>
+    function fixProfile() {
+      // Get the profile from localStorage
+      const profileKey = Object.keys(localStorage).find(key => key.includes('coach_profile'));
+
+      if (!profileKey) {
+        document.getElementById('result').innerHTML = '<p style="color:red;">No profile found in localStorage</p>';
+        return;
+      }
+
+      const profile = JSON.parse(localStorage.getItem(profileKey));
+      console.log('Current profile:', profile);
+
+      // Update years of experience
+      profile.yearsExperience = '20+';
+
+      // Save back to localStorage
+      localStorage.setItem(profileKey, JSON.stringify(profile));
+
+      console.log('Updated profile:', profile);
+      document.getElementById('result').innerHTML = '<p style="color:green;">Profile updated! Years of experience set to 20+. Refresh your profile page.</p>';
+    }
+  </script>
+</body>
+</html>

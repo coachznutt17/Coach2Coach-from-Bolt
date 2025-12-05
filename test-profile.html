@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Profile</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <h1>Profile Test</h1>
+  <div id="result"></div>
+
+  <script>
+    const { createClient } = supabase;
+    const client = createClient(
+      'https://xkjidqfsenjrcabsagoi.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhramlkcWZzZW5qcmNhYnNhZ29pIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NDMxOTA0MCwiZXhwIjoyMDY5ODk1MDQwfQ.7qLzkd-DZY8vN-NIEJrc2yKEMNbbhxKJPB1PCpzZA6o'
+    );
+
+    async function checkProfile() {
+      const { data, error } = await client
+        .from('profiles')
+        .select('*')
+        .eq('user_id', 'eb119ad5-7fd4-4a49-ba5f-fa00c05cf5cf');
+
+      document.getElementById('result').innerHTML = '<pre>' +
+        JSON.stringify({ data, error }, null, 2) + '</pre>';
+    }
+
+    checkProfile();
+  </script>
+</body>
+</html>

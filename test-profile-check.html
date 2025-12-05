@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile Check - Coach2Coach</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #059669;
+      margin-bottom: 20px;
+    }
+    .section {
+      margin: 20px 0;
+      padding: 20px;
+      background: #f9fafb;
+      border-radius: 6px;
+      border-left: 4px solid #059669;
+    }
+    .error {
+      border-left-color: #dc2626;
+    }
+    button {
+      background: #059669;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #047857;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    pre {
+      background: #1f2937;
+      color: #10b981;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 13px;
+    }
+    .success {
+      color: #059669;
+      font-weight: bold;
+    }
+    .error-text {
+      color: #dc2626;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🏈 Coach2Coach Profile System Test</h1>
+
+    <div class="section">
+      <h2>Create Test Account</h2>
+      <input type="email" id="email" placeholder="Email (e.g., coach123@test.com)">
+      <input type="password" id="password" placeholder="Password (min 8 chars)">
+      <input type="text" id="firstName" placeholder="First Name">
+      <input type="text" id="lastName" placeholder="Last Name">
+      <input type="text" id="title" placeholder="Title (optional)">
+      <input type="text" id="location" placeholder="Location (optional)">
+      <button onclick="signUpUser()">Create Account</button>
+    </div>
+
+    <div class="section">
+      <h2>Check Profiles</h2>
+      <button onclick="checkProfiles()">List All Profiles</button>
+      <button onclick="checkMyProfile()">Check My Profile</button>
+      <button onclick="checkUsers()">List All Users</button>
+    </div>
+
+    <div class="section">
+      <h2>Authentication</h2>
+      <button onclick="checkSession()">Check Current Session</button>
+      <button onclick="signOutUser()">Sign Out</button>
+    </div>
+
+    <div id="output"></div>
+  </div>
+
+  <script>
+    // Initialize Supabase client
+    const SUPABASE_URL = 'https://dltscjplwbvtlgguwsbb.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRsdHNjanBsd2J2dGxnZ3V3c2JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0MjU0NzgsImV4cCI6MjA3NTAwMTQ3OH0.-d2tfOD7N5QgWhJOSpPsti4nF2vp2Nx_4IkZMVsfGKY';
+
+    // Try to load from localStorage if set by main app
+    const supabaseUrl = localStorage.getItem('supabase_url') || SUPABASE_URL;
+    const supabaseKey = localStorage.getItem('supabase_anon_key') || SUPABASE_ANON_KEY;
+
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    function output(message, isError = false) {
+      const div = document.getElementById('output');
+      const section = document.createElement('div');
+      section.className = 'section' + (isError ? ' error' : '');
+      section.innerHTML = message;
+      div.appendChild(section);
+      div.scrollTop = div.scrollHeight;
+    }
+
+    async function signUpUser() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const firstName = document.getElementById('firstName').value;
+      const lastName = document.getElementById('lastName').value;
+      const title = document.getElementById('title').value;
+      const location = document.getElementById('location').value;
+
+      if (!email || !password || !firstName || !lastName) {
+        output('<span class="error-text">Please fill in email, password, first name, and last name</span>', true);
+        return;
+      }
+
+      output('<h3>Creating account...</h3>');
+
+      try {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              first_name: firstName,
+              last_name: lastName,
+              title: title || '',
+              location: location || ''
+            }
+          }
+        });
+
+        if (error) {
+          output(`<span class="error-text">Signup Error:</span><pre>${JSON.stringify(error, null, 2)}</pre>`, true);
+        } else {
+          output(`<span class="success">✓ Account Created Successfully!</span><pre>${JSON.stringify(data, null, 2)}</pre>`);
+
+          // Wait a moment then check if profile was created
+          setTimeout(async () => {
+            await checkMyProfile();
+          }, 1000);
+        }
+      } catch (e) {
+        output(`<span class="error-text">Exception:</span><pre>${e.message}</pre>`, true);
+      }
+    }
+
+    async function checkProfiles() {
+      output('<h3>Fetching all profiles...</h3>');
+
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(10);
+
+        if (error) {
+          output(`<span class="error-text">Error:</span><pre>${JSON.stringify(error, null, 2)}</pre>`, true);
+        } else {
+          output(`<span class="success">✓ Found ${data.length} profiles:</span><pre>${JSON.stringify(data, null, 2)}</pre>`);
+        }
+      } catch (e) {
+        output(`<span class="error-text">Exception:</span><pre>${e.message}</pre>`, true);
+      }
+    }
+
+    async function checkMyProfile() {
+      output('<h3>Checking your profile...</h3>');
+
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user) {
+          output('<span class="error-text">Not signed in</span>', true);
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+
+        if (error) {
+          output(`<span class="error-text">Error:</span><pre>${JSON.stringify(error, null, 2)}</pre>`, true);
+        } else {
+          output(`<span class="success">✓ Your profile:</span><pre>${JSON.stringify(data, null, 2)}</pre>`);
+        }
+      } catch (e) {
+        output(`<span class="error-text">Exception:</span><pre>${e.message}</pre>`, true);
+      }
+    }
+
+    async function checkUsers() {
+      output('<h3>Fetching auth users (limited by RLS)...</h3>');
+
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('id, email, first_name, last_name, created_at')
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          output(`<span class="error-text">Error:</span><pre>${JSON.stringify(error, null, 2)}</pre>`, true);
+        } else {
+          output(`<span class="success">✓ Found ${data.length} users:</span><pre>${JSON.stringify(data, null, 2)}</pre>`);
+        }
+      } catch (e) {
+        output(`<span class="error-text">Exception:</span><pre>${e.message}</pre>`, true);
+      }
+    }
+
+    async function checkSession() {
+      output('<h3>Checking session...</h3>');
+
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+
+        if (error) {
+          output(`<span class="error-text">Error:</span><pre>${JSON.stringify(error, null, 2)}</pre>`, true);
+        } else if (session) {
+          output(`<span class="success">✓ Active session:</span><pre>${JSON.stringify({
+            user: {
+              id: session.user.id,
+              email: session.user.email,
+              metadata: session.user.user_metadata
+            },
+            expires_at: session.expires_at
+          }, null, 2)}</pre>`);
+        } else {
+          output('<span class="error-text">No active session</span>', true);
+        }
+      } catch (e) {
+        output(`<span class="error-text">Exception:</span><pre>${e.message}</pre>`, true);
+      }
+    }
+
+    async function signOutUser() {
+      output('<h3>Signing out...</h3>');
+
+      try {
+        const { error } = await supabase.auth.signOut();
+
+        if (error) {
+          output(`<span class="error-text">Error:</span><pre>${JSON.stringify(error, null, 2)}</pre>`, true);
+        } else {
+          output('<span class="success">✓ Signed out successfully</span>');
+        }
+      } catch (e) {
+        output(`<span class="error-text">Exception:</span><pre>${e.message}</pre>`, true);
+      }
+    }
+
+    // Check connection on load
+    window.addEventListener('load', () => {
+      output(`<h3>Supabase Connection</h3><p>URL: ${supabaseUrl.substring(0, 30)}...</p><p class="success">Ready to test!</p>`);
+    });
+  </script>
+</body>
+</html>
